@@ -1,0 +1,29 @@
+{
+  "files": {
+    "main.css": "/static/css/main.ffa0ef2d.css",
+    "main.js": "/static/js/main.b3d2b13d.js",
+    "static/js/453.046b99b1.chunk.js": "/static/js/453.046b99b1.chunk.js",
+    "static/media/doc.jpg": "/static/media/doc.ffab2f8a1d257f56d954.jpg",
+    "static/media/FotosAlunos1.jpeg": "/static/media/FotosAlunos1.511c0a1ecd3da136f096.jpeg",
+    "static/media/Caroline.png": "/static/media/Caroline.58aa7c2baa84c2393a0e.png",
+    "static/media/GuilhermeRossi.jpeg": "/static/media/GuilhermeRossi.b3c41fc125837c5821ff.jpeg",
+    "static/media/GuilhermeFranca.jpeg": "/static/media/GuilhermeFranca.90c73a075f308ea38cd2.jpeg",
+    "static/media/jose.png": "/static/media/jose.e16b2c6806a60f1a4ac5.png",
+    "static/media/Isabele.jpeg": "/static/media/Isabele.a60299dbe9ea279bd706.jpeg",
+    "static/media/MarcelaRahal.jpeg": "/static/media/MarcelaRahal.015376c9156da6a206cc.jpeg",
+    "static/media/gabriel.jpeg": "/static/media/gabriel.7a2a855b351dfbd269d5.jpeg",
+    "static/media/img_curso1.png": "/static/media/img_curso1.84a5d7433084a84758a5.png",
+    "static/media/img_curso3.png": "/static/media/img_curso3.364ca23eac8dafb2210b.png",
+    "static/media/FelipeFoto.jpeg": "/static/media/FelipeFoto.e159646f750901db3abe.jpeg",
+    "static/media/img_curso2.png": "/static/media/img_curso2.823048d8b0e6b7d4a6ce.png",
+    "static/media/logoSmall.png": "/static/media/logoSmall.7d23f9dee29a1b4757ce.png",
+    "index.html": "/index.html",
+    "main.ffa0ef2d.css.map": "/static/css/main.ffa0ef2d.css.map",
+    "main.b3d2b13d.js.map": "/static/js/main.b3d2b13d.js.map",
+    "453.046b99b1.chunk.js.map": "/static/js/453.046b99b1.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.ffa0ef2d.css",
+    "static/js/main.b3d2b13d.js"
+  ]
+}
