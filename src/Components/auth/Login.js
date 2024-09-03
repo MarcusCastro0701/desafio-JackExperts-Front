@@ -9,9 +9,9 @@ import UserContext from "../../context/UserContext.js"
 import { useCustomForm } from "../../hooks/useCustomForms"
 import useNavigateAndMoveUp from "../../hooks/useNavigateAndMoveUp"
 import api from "../../services/API"
-import { ButtonWrapper } from "./ButtonWrapper"
-import { InputWrapper } from "./InputWrapper"
-import { ChangeAuthButton } from "./SignUp"
+import { ButtonWrapper } from "./ButtonWrapper.js"
+import { InputWrapper } from "./InputWrapper.js"
+import { ChangeAuthButton } from "./SignUp.js"
 
 export default function Login ({changeAuth}) {
 
@@ -83,7 +83,7 @@ export default function Login ({changeAuth}) {
                     />
                 </InputWrapper>
                 <ButtonWrapper width={"100%"}>
-                    <Button onClick={() => SubmitForms()} width={"80%"} height={"55px"} backgroundColor={"#158A7A"}>{"Entrar"}</Button>
+                    <Button onClick={() => SubmitForms()} width={"80%"} height={"55px"}>{"Entrar"}</Button>
                     <ChangeAuthButton onClick={changeAuth}>Criar um Cadastro</ChangeAuthButton>
                 </ButtonWrapper>
 
@@ -110,12 +110,12 @@ const Container = styled.div`
     img {
         max-height: 150px;
         max-width: 60%;
-        opacity: ${props => props.isLoading ? ("0.2"):("1")};
+        opacity: ${({ isLoading }) => isLoading ? "0.2" : "1"};
     }
     @media (max-width: 850px) {
         width: 100%;
     }
-`
+`;
 
 const UserActionsContainer = styled.div`
     width: 100%;
@@ -123,6 +123,6 @@ const UserActionsContainer = styled.div`
     display: flex;
     flex-direction: column;
     row-gap: 3vh; 
-    opacity: ${props => props.isLoading ? ("0.2"):("1")};
-    pointer-events: ${props => props.isLoading ? ("none"):("initial")};
-`
+    opacity: ${({ isLoading }) => isLoading ? "0.2" : "1"};
+    pointer-events: ${({ isLoading }) => isLoading ? "none" : "initial"};
+`;

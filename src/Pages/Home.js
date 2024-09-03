@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import logo from '../img/logoSmall.png';
-import backgroundHome from '../img/Background1.png'
 import UserContext from "../context/UserContext.js"
 import { Link } from 'react-router-dom';
 import { useContext } from "react"
 import { useNavigate } from 'react-router-dom';
 import { Fade, Zoom } from 'react-awesome-reveal';
+import Task from '../Components/Task.js';
 import api from '../services/API.js';
 import StyledButton from '../common/form/Button.js';
-import StyledInput from '../common/form/Input.js';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 
@@ -40,15 +38,10 @@ function Home() {
 
   useEffect(() => {
 
-    if(!userData.name){
-      toast('Você deve fazer o login antes!')
-      navigate('/auth')
-    }
-
     return () => {
     };
 
-  }, []);
+  }, [userData, navigate]);
 
   return (
     <Container>
@@ -56,8 +49,8 @@ function Home() {
         <LogOutContainer>
           <span>Olá, { userData.name.split(" ")[0] }</span>
             <StyledButton 
-              background="#FF0000"
-              backgroundhover="#AD2E2E"
+              backgroundhover="#E73232"
+              background="#BD0505"
               onClick={handleLogout}
             >
               Sair
@@ -65,47 +58,91 @@ function Home() {
 
         </LogOutContainer> 
     ) : (
-        <Link to="/auth">
-            <StyledButton
-              background="#158A7A"
-              backgroundhover="#2DA898"
-              onClick={handleLogout}
-            >
-              Login
-            </StyledButton>
-        </Link>
+        ''
     )}
       <MainContentHome>
 
-        <StyledButton backgroundhover={"#2DA898"} width={'190px'} onClick={toggleExpanded}>nova tarefa</StyledButton>
+        {!userData?.name && userData !== null 
+          ? 
+          <>
+            <h1>Para poder utilizar as funcionalidades do gerenciador de tarefas, faça login <Link to="/auth">
+              <StyledButton
+                background="#158A7A"
+                backgroundhover="#2DA898"
+                onClick={handleLogout}
+              >
+                Clicando aqui
+              </StyledButton>
+            </Link></h1> 
+            
+          </>
+          
+          : 
+          <>
+            <StyledButton backgroundhover={"#2DA898"} width={'190px'} onClick={toggleExpanded}>nova tarefa</StyledButton>
         
-      <PopUpContainer
-        initial={{ height: 0 }}
-        animate={{ height: expanded ? 'auto' : 0}}
-        transition={{ duration: 0.5 }}
-      >
-         
-        <SimpleInput width={'250px'} placeholder='Nome da tarefa...' value={taskName} onChange={(e) => setTaskName(e.target.value)}/>
+          <PopUpContainer
+            initial={{ height: 0 }}
+            animate={{ height: expanded ? 'auto' : 0}}
+            transition={{ duration: 0.5 }}
+          >
+            
+            <SimpleInput width={'250px'} placeholder='Nome da tarefa...' value={taskName} onChange={(e) => setTaskName(e.target.value)}/>
+    
+            <DescriptionInput placeholder='Descrição...'/>
+    
+            <span>
+              <StyledButton 
+              fontSize={'15px'}  
+              backgroundhover={"#2DA898"} 
+              width={'240px'} 
+              onClick={toggleExpanded}
+              >
+                Adicionar tarefa
+              </StyledButton>
+    
+              <StyledButton 
+              fontSize={'15px'} 
+              background={"#BD0505"} 
+              backgroundhover={"#E73232"}
+              width={'130px'} 
+              onClick={toggleExpanded}
+              >
+                Cancelar
+              </StyledButton>
+            </span>
+    
+          </PopUpContainer>
+    
+          <TaskContainer>
+    
+            <span>
+    
+              Exibição
+              <select placeholder="exibição">
+                <option>
+                  Todas
+                </option>
+    
+                <option>
+                  Completas
+                </option>
+    
+                <option>
+                  Pendentes
+                </option>
+              </select>
+    
+            </span>
+    
+            <Task />
+            <Task />
+    
+          </TaskContainer>
+            </>
+            }
 
-        <DescriptionInput placeholder='Descrição...'/>
-
-      </PopUpContainer>
-
-      <TaskContainer>
-        <select>
-          <option>
-            Todas
-          </option>
-
-          <option>
-            Completas
-          </option>
-
-          <option>
-            Pendentes
-          </option>
-        </select>
-      </TaskContainer>
+        
 
       </MainContentHome>
     </Container>
@@ -116,12 +153,14 @@ export default Home;
 
 const Container = styled.div`
   width: 100%;
-  height: 100% !important;
+  min-height: 100vh;
+  box-sizing: border-box;
   position: relative;
-  padding-top: 50px;
-  padding: 50px 0 0 30%;
+  padding: 50px 0 0 0;
   display: flex;
-  font-family: sans-serif;
+  justify-content: center;
+  font-family: sans-serif !important;
+  background-color: #F2F2F2;
   @media (max-width: 1200px) {
     margin-top: 0;
     height: auto;
@@ -134,7 +173,6 @@ const MainContentHome = styled.div`
   padding: 15px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   border-radius: 15px;
   margin-top: 10vh;
   border: 0px solid #158A7A;
@@ -147,6 +185,14 @@ const PopUpContainer = styled(motion.div)`
   flex-direction: column;
   justify-content: space-between;
   width: 85%;
+  span{
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-direction: row;
+  width: 390px !important;
+  margin-top: 10px;
+}
 `;
 
 const DescriptionInput = styled.textarea`
@@ -192,16 +238,34 @@ const SimpleInput = styled.input`
 `;
 
 const TaskContainer = styled.div`
-width: 100%;
-padding: 15px;
+width: 150%;
+padding: 15px 15px 15px 0;
 display: flex;
 flex-direction: column;
 justify-content: center;
-select{
- width: 100px;
- padding-left: -15px;
+span{
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  font-weight: 600;
+  font-size: 22px;
+  color: #757575;
+  margin: 20px 0;
 }
-`
+select{
+ width: 150px;
+ font-size: 18px;
+ border-radius: 25px;
+ font-weight: 500;
+ margin-left: 13px;
+ padding: 5px;
+ color: #757575;
+}
+select:focus {
+  outline: none;
+  box-shadow: none;
+}
+`;
 
 const LogOutContainer = styled.div`
 display:flex;

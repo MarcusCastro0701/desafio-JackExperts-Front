@@ -1,7 +1,7 @@
 import Button from '@mui/material/Button';
 import styled from 'styled-components';
 
-export default function StyledButton({ variant='contained', width, fontsize, children, background, backgroundhover, fontColor, margintop, ...props }) {
+export default function StyledButton({ variant='contained', width, fontsize, children, background, backgroundhover, fontColor, margintop, height, ...props }) {
   return (
     <StyledMuiButton variant={variant} width={width} fontsize={fontsize} background={background} backgroundhover={backgroundhover} fontColor={fontColor} margintop={margintop} {...props}>
       {children}
@@ -17,7 +17,8 @@ const StyledMuiButton = styled(Button)`
     background-color: ${(props) => props.background || '#158A7A'};
     color: ${(props) => props.fontColor || '#FFFFFF'};
     margin-top: ${(props) => props.margintop || '0'};
-    
+    height: ${(props) => props.height || 'auto'};
+
     &:hover {
       background-color: ${(props) => props.backgroundhover || '#158A7A'};
     }

@@ -2,7 +2,7 @@ import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import './App.css';
 import Auth from './Pages/Auth';
-import Main from './Pages/Main';
+import Home from './Pages/Home';
 import NotFound from './Pages/NotFound';
 import { UserProvider } from './context/UserContext';
 
@@ -11,7 +11,7 @@ function App() {
     <UserProvider>
       <Router>
         <Routes>
-          <Route path="/" element={<Main />} />
+          <Route path="/" element={<Home />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
