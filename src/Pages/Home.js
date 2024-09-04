@@ -16,6 +16,7 @@ function Home() {
 
   const [expanded, setExpanded] = useState(false);
   const [taskName, setTaskName] = useState('');
+  const [editingVerify, setEditingVerify] = useState(false);
   const { userData, setUserData } = useContext(UserContext);
 
   const navigate = useNavigate();
@@ -135,8 +136,8 @@ function Home() {
     
             </span>
     
-            <Task />
-            <Task />
+            <Task editingVerify={editingVerify} setEditingVerify={setEditingVerify} />
+            <Task editingVerify={editingVerify} setEditingVerify={setEditingVerify} />
     
           </TaskContainer>
             </>
@@ -238,11 +239,10 @@ const SimpleInput = styled.input`
 `;
 
 const TaskContainer = styled.div`
-width: 150%;
-padding: 15px 15px 15px 0;
+min-width: 100%;
+padding: 15px 0px 15px 0;
 display: flex;
 flex-direction: column;
-justify-content: center;
 span{
   display: flex;
   align-items: center;
