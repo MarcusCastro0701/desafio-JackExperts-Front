@@ -4,22 +4,59 @@ import UserContext from "../context/UserContext.js"
 import { Link } from 'react-router-dom';
 import { useContext } from "react"
 import { useNavigate } from 'react-router-dom';
-import { Fade, Zoom } from 'react-awesome-reveal';
+import { motion } from 'framer-motion';
 import Task from '../Components/Task.js';
 import api from '../services/API.js';
 import StyledButton from '../common/form/Button.js';
-import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
-
+import { Spinner } from '../common/spinner/Spinner.js';
 
 function Home() {
 
   const [expanded, setExpanded] = useState(false);
-  const [taskName, setTaskName] = useState('');
   const [editingVerify, setEditingVerify] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const [taskName, setTaskName] = useState('');
+  const [taskDescription, setTaskDescription] = useState('');
+
+  const [allTasks, setAllTasks] = useState([]);
+  const [exibitionOption, setExibitionOption] = useState([]);
+  
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [useEffectCounter, setUseEffectCounter] = useState(0);
   const { userData, setUserData } = useContext(UserContext);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+    window.addEventListener('resize', handleResize);
+
+    async function getTasks(){
+      try {
+        setLoading(true);
+        const getTasks = await api.getTasksByUserId(userData.token, userData.userId);
+        setAllTasks(getTasks.data);
+        setExibitionOption(getTasks.data);
+        setLoading(false);
+        return 
+      } catch (error) {
+        console.log(error);
+        setLoading(false)
+        return toast.error('Não foi possível obter as tarefas do usuário no momento.')
+      }
+    }
+
+    return () => {
+      getTasks();
+      window.removeEventListener('resize', handleResize);
+    };
+
+  }, [useEffectCounter]);
 
   const toggleExpanded = () => {
     setExpanded(!expanded);
@@ -37,12 +74,58 @@ function Home() {
     }
   }
 
-  useEffect(() => {
+  async function insertTask(){
 
-    return () => {
-    };
+    setExpanded(!expanded);
+    setTaskName('');
 
-  }, [userData, navigate]);
+    const body = {
+      name: taskName,
+      description: taskDescription,
+    }
+
+    try {
+
+      setLoading(true);
+      await api.insertTask(userData.token, body, userData.userId);
+      setExpanded(!expanded);
+      setTaskName('');
+      setTaskDescription('');
+      setLoading(false);
+      setUseEffectCounter(useEffectCounter + 1)
+      return toast.dark('Tarefa inserida com sucesso!');
+
+    } catch (error) {
+
+      console.log(error);
+      setExpanded(!expanded);
+      setTaskName('');
+      setTaskDescription('');
+      setLoading(false);
+      return toast.error('Não foi possível inserir a tarefa no momento!')
+
+    }
+
+  }
+
+  function handleExibition(value){
+
+    if(value === 'all'){
+      setExibitionOption(allTasks);
+      return
+    }
+    if(value === 'pending'){
+      const filtered = allTasks.filter(task => task.isDone === false);
+      setExibitionOption(filtered)
+      return
+    }
+    if(value === 'complete'){
+      const filtered = allTasks.filter(task => task.isDone === true);
+      setExibitionOption(filtered)
+      return
+    }
+
+  }
 
   return (
     <Container>
@@ -64,13 +147,14 @@ function Home() {
       <MainContentHome>
 
         {!userData?.name && userData !== null 
+
           ? 
+          
           <>
             <h1>Para poder utilizar as funcionalidades do gerenciador de tarefas, faça login <Link to="/auth">
               <StyledButton
                 background="#158A7A"
                 backgroundhover="#2DA898"
-                onClick={handleLogout}
               >
                 Clicando aqui
               </StyledButton>
@@ -79,6 +163,7 @@ function Home() {
           </>
           
           : 
+
           <>
             <StyledButton backgroundhover={"#2DA898"} width={'190px'} onClick={toggleExpanded}>nova tarefa</StyledButton>
         
@@ -88,25 +173,26 @@ function Home() {
             transition={{ duration: 0.5 }}
           >
             
-            <SimpleInput width={'250px'} placeholder='Nome da tarefa...' value={taskName} onChange={(e) => setTaskName(e.target.value)}/>
+            <SimpleInput width={windowWidth > 800 ? '250px' : '100%'} placeholder='Nome da tarefa...' value={taskName} onChange={(e) => setTaskName(e.target.value)}/>
     
-            <DescriptionInput placeholder='Descrição...'/>
+            <DescriptionInput width={windowWidth > 800 ? '100%' : '100%'} placeholder='Descrição...' value={taskDescription} onChange={(e) => setTaskDescription(e.target.value)}/>
     
             <span>
               <StyledButton 
-              fontSize={'15px'}  
+              fontSize={windowWidth > 800 ? '15px' : '10px'}  
               backgroundhover={"#2DA898"} 
-              width={'240px'} 
-              onClick={toggleExpanded}
+              width={windowWidth > 800 ? '240px' : '220px'} 
+              onClick={insertTask}
               >
                 Adicionar tarefa
               </StyledButton>
     
               <StyledButton 
-              fontSize={'15px'} 
+              fontSize={windowWidth > 800 ? '15px' : '20px'} 
               background={"#BD0505"} 
               backgroundhover={"#E73232"}
-              width={'130px'} 
+              width={windowWidth > 800 ? '130px' : '120px'} 
+              margintop={windowWidth > 800 ? '0px' : '10px'}
               onClick={toggleExpanded}
               >
                 Cancelar
@@ -116,28 +202,62 @@ function Home() {
           </PopUpContainer>
     
           <TaskContainer>
+
+            {loading 
+
+              ?
+
+              <Spinner />
+
+              :
+
+              <>
+                  <span>
     
-            <span>
+                    Exibição
+                    <select placeholder="exibição" onChange={(e) => handleExibition(e.target.value)}>
+                      <option value={'all'}>
+                        Todas
+                      </option>
+
+                      <option value={'complete'}>
+                        Completas
+                      </option>
+
+                      <option value={'pending'}>
+                        Pendentes
+                      </option>
+                    </select>
+
+                  </span>
+
+                  {exibitionOption.length === 0 
+
+                    ?
+
+                    <h1>Não há tarefas no momento!</h1>
+
+                    :
+
+                    exibitionOption.map((task) => (
+                      <Task 
+                      editingVerify={editingVerify} 
+                      setEditingVerify={setEditingVerify} 
+                      taskInfo={task}
+                      useEffectCounter={useEffectCounter}
+                      setUseEffectCounter={setUseEffectCounter}
+                      />
+                    ))
+
+                  }
+
+                  
+
+              </>
+
+            }
     
-              Exibição
-              <select placeholder="exibição">
-                <option>
-                  Todas
-                </option>
-    
-                <option>
-                  Completas
-                </option>
-    
-                <option>
-                  Pendentes
-                </option>
-              </select>
-    
-            </span>
-    
-            <Task editingVerify={editingVerify} setEditingVerify={setEditingVerify} />
-            <Task editingVerify={editingVerify} setEditingVerify={setEditingVerify} />
+            
     
           </TaskContainer>
             </>
@@ -162,9 +282,12 @@ const Container = styled.div`
   justify-content: center;
   font-family: sans-serif !important;
   background-color: #F2F2F2;
-  @media (max-width: 1200px) {
+  @media (max-width: 800px) {
     margin-top: 0;
     height: auto;
+    width: 100% !important;
+    align-items: center;
+    justify-content: center;
   }
 `;
 
@@ -178,6 +301,15 @@ const MainContentHome = styled.div`
   margin-top: 10vh;
   border: 0px solid #158A7A;
   min-width: 500px;
+  h1{
+    text-align: center;
+  }
+  @media (max-width: 800px) {
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100%;
+    min-width: 100px !important;
+  }
 `;
 
 const PopUpContainer = styled(motion.div)`
@@ -194,6 +326,13 @@ const PopUpContainer = styled(motion.div)`
   width: 390px !important;
   margin-top: 10px;
 }
+@media (max-width: 800px) {
+    align-items: center !important;
+    width: 100%;
+    span{
+      flex-direction: column;
+    }
+  }
 `;
 
 const DescriptionInput = styled.textarea`
@@ -215,6 +354,9 @@ const DescriptionInput = styled.textarea`
     outline: none;        
     border-color: #158A7A; 
   }
+  @media (max-width: 800px) {
+    width: 90%;
+  }
 `;
 
 const SimpleInput = styled.input`
@@ -235,6 +377,9 @@ const SimpleInput = styled.input`
   &:focus {
     outline: none;        
     border-color: #158A7A; 
+  }
+  @media (max-width: 800px) {
+    width: 70%;
   }
 `;
 
@@ -265,6 +410,10 @@ select:focus {
   outline: none;
   box-shadow: none;
 }
+@media (max-width: 800px) {
+    align-items: center !important;
+    width: 100%;
+  }
 `;
 
 const LogOutContainer = styled.div`
@@ -282,8 +431,8 @@ span{
   color:black;
   margin-right: 10px;
 }
+@media (max-width: 800px) {
+    width: 50%;
+    justify-content: space-between;
+  }
 `;
-
-
-
-
