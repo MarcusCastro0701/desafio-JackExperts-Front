@@ -20,7 +20,7 @@ Para rodar este projeto localmente, siga os passos abaixo:
 
 Clone o Repositório
 
-git clone https://github.com/seu-usuario/desafio-jackexperts-front.git
+git clone <URL-DO-REPOSITORIO>
 Navegue até o Diretório do Projeto
 
 
