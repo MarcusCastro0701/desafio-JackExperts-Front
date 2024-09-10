@@ -76,6 +76,16 @@ function Home() {
 
   async function insertTask(){
 
+    if(taskName.length > 15){
+      toast.error('Nome muito extenso! No máximo 15 caracteres')
+      return
+    }
+
+    if(taskDescription.length > 180){
+      toast.error('Descrição muito extensa! No máximo 180 caracteres')
+      return
+    }
+
     setExpanded(!expanded);
     setTaskName('');
 
@@ -173,9 +183,9 @@ function Home() {
             transition={{ duration: 0.5 }}
           >
             
-            <SimpleInput width={windowWidth > 800 ? '250px' : '100%'} placeholder='Nome da tarefa...' value={taskName} onChange={(e) => setTaskName(e.target.value)}/>
+            <SimpleInput width={windowWidth > 800 ? '250px' : '100%'} placeholder='Nome... (no mínimo 4 caracteres)' value={taskName} onChange={(e) => setTaskName(e.target.value)}/>
     
-            <DescriptionInput width={windowWidth > 800 ? '100%' : '100%'} placeholder='Descrição...' value={taskDescription} onChange={(e) => setTaskDescription(e.target.value)}/>
+            <DescriptionInput width={windowWidth > 800 ? '100%' : '100%'} placeholder='Descrição... (no mínimo 10 caracteres)' value={taskDescription} onChange={(e) => setTaskDescription(e.target.value)}/>
     
             <span>
               <StyledButton 
@@ -360,7 +370,7 @@ const DescriptionInput = styled.textarea`
 `;
 
 const SimpleInput = styled.input`
-  width: 250px;          
+  width: 275px;          
   height: auto;         
   padding: 16px;         
   font-size: 16px;       
