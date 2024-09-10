@@ -14,196 +14,154 @@ import { FaRegEdit } from "react-icons/fa";
 import { MdOutlineDelete } from "react-icons/md";
 import { format } from 'date-fns';
 
-function Task({editingVerify, setEditingVerify, taskInfo, useEffectCounter, setUseEffectCounter}) {
+function Task({ editingVerify, setEditingVerify, taskInfo, useEffectCounter, setUseEffectCounter }) {
 
+  // Estado para controlar se a tarefa está expandida ou não
   const [expanded, setExpanded] = useState(false);
+
+  // Contexto do usuário logado
   const { userData, setUserData } = useContext(UserContext);
-  const [loading, setLoading] = useState(false)
+
+  // Estado para controlar o carregamento da ação
+  const [loading, setLoading] = useState(false);
+
+  // Estado para controlar a descrição e nome da tarefa em edição
   const [taskDescription, setTaskDescription] = useState(taskInfo.description);
   const [taskName, setTaskName] = useState(taskInfo.name);
+
+  // Estado para controlar se a tarefa está sendo editada
   const [editing, setEditing] = useState(false);
 
+  // Hook de navegação para redirecionamento
   const navigate = useNavigate();
 
   useEffect(() => {
-
-    if(!userData.name){
-      toast('Você deve fazer o login antes!')
-      navigate('/auth')
+    // Verifica se o usuário está logado, caso contrário, redireciona para a página de login
+    if (!userData.name) {
+      toast('Você deve fazer o login antes!');
+      navigate('/auth');
     }
 
-    return () => {
-    };
-
+    return () => {};
   }, []);
 
+  // Função para alternar o estado de expansão da tarefa
   function toggleExpanded() {
-    setExpanded(!expanded)
+    setExpanded(!expanded);
   }
 
+  // Função para iniciar a edição da tarefa
   function startEdition() {
-
-    if(editingVerify){
-      toast.dark('Apenas uma tarefa pode ser editada por vêz!');
-      return
+    if (editingVerify) {
+      toast.dark('Apenas uma tarefa pode ser editada por vez!');
+      return;
     }
 
     setEditingVerify(true);
     setEditing(true);
-    return
-
   }
 
+  // Função para cancelar a edição da tarefa
   function cancelEdition() {
-
     setTaskDescription(taskInfo.description);
     setTaskName(taskInfo.name);
     setEditingVerify(false);
     setEditing(false);
-    return
-
   }
 
-  async function deleteTask(){
-
+  // Função para deletar a tarefa
+  async function deleteTask() {
     try {
-
       await api.deleteTaskById(taskInfo.id, userData.token);
       setExpanded(!expanded);
       toast.dark('Tarefa deletada com sucesso!');
-
-      return setUseEffectCounter(useEffectCounter + 1);
-
+      setUseEffectCounter(useEffectCounter + 1);
     } catch (error) {
       console.log(error);
       setExpanded(!expanded);
-      return toast.error('Não foi possível realizar esta ação no momento!')
+      toast.error('Não foi possível realizar esta ação no momento!');
     }
-
   }
 
-  async function toggleChecked(){
-
+  // Função para marcar a tarefa como finalizada
+  async function toggleChecked() {
     try {
       await api.setCheckedTrue(taskInfo.id, userData.token);
       setUseEffectCounter(useEffectCounter + 1);
-      return toast.dark(`'${taskInfo.name}' marcada como finalizada!`)
+      toast.dark(`'${taskInfo.name}' marcada como finalizada!`);
     } catch (error) {
       console.log(error);
-      return toast.error('Não foi possível realizar esta ação no momento!')
+      toast.error('Não foi possível realizar esta ação no momento!');
     }
-
   }
 
-  async function newData(){
-
-    if(taskName.length > 15){
-      toast.error('Nome muito extenso! No máximo 15 caracteres')
-      return
+  // Função para salvar os novos dados da tarefa após edição
+  async function newData() {
+    if (taskName.length > 15) {
+      toast.error('Nome muito extenso! No máximo 15 caracteres');
+      return;
     }
 
-    if(taskDescription.length > 180){
-      toast.error('Descrição muito extensa! No máximo 180 caracteres')
-      return
+    if (taskDescription.length > 180) {
+      toast.error('Descrição muito extensa! No máximo 180 caracteres');
+      return;
     }
 
     const body = {
       name: taskName,
-      description: taskDescription
-    }
+      description: taskDescription,
+    };
 
     try {
-
       await api.setNewData(taskInfo.id, body, userData.token);
       cancelEdition();
       setUseEffectCounter(useEffectCounter + 1);
-      return toast.dark('Informações atualizadas com sucesso!')
-
+      toast.dark('Informações atualizadas com sucesso!');
     } catch (error) {
-      
       console.log(error);
       cancelEdition();
-      toast.error('Não foi possível realizar esta ação no momento!')
-
+      toast.error('Não foi possível realizar esta ação no momento!');
     }
-
   }
 
   return (
-
     <Container>
-
-        <Left>
-
-            {editing 
-            
-              ? 
-
-              <>
-              
-                <SimpleInput value={taskName} onChange={(e) => setTaskName(e.target.value)}/>
-
-                <DescriptionInput value={taskDescription} onChange={(e) => setTaskDescription(e.target.value)}/>
-
-                <OptionsRow>
-                  <h3 onClick={() => newData()}>Pronto</h3>
-                  <b onClick={() => cancelEdition()}>Cancelar</b>
-                </OptionsRow>
-              
-              </>
-
-              :
-
-              <>
-                  <h1>
-                    {taskInfo.name}  
-                  </h1>
-
-                  <h2>
-                    {taskInfo.description}
-                  </h2>
-
-                  <h3>
-                    Criada em {format(new Date(taskInfo.createdAt), 'dd/MM/yyyy')}
-                  </h3>
-
-              </>
-
-            }
-            
-
-            <OptionsRow editing={editing}>
-
-              <span>
-
-                  <Edit editing={editing} onClick={() => startEdition()}/>
-
-                  <Delete onClick={() => toggleExpanded()} editing={editing}/>
-
-              </span>
-
-              <PopUpContainer 
-                initial={{ height: 0 }}
-                animate={{ height: expanded ? 'auto' : 0}}
-                transition={{ duration: 0.5 }}
-              >
-        
-                <h2>Deletar tarefa? </h2>
-                <h3 onClick={() => deleteTask()} >Sim</h3>
-                <b onClick={() => toggleExpanded()} >Não</b>
-
-              </PopUpContainer>
-
+      <Left>
+        {editing ? (
+          <>
+            <SimpleInput value={taskName} onChange={(e) => setTaskName(e.target.value)} />
+            <DescriptionInput value={taskDescription} onChange={(e) => setTaskDescription(e.target.value)} />
+            <OptionsRow>
+              <h3 onClick={() => newData()}>Pronto</h3>
+              <b onClick={() => cancelEdition()}>Cancelar</b>
             </OptionsRow>
-
-        </Left>
-
-        <Right>
-
-            <Check onClick={() => toggleChecked()} isDone={taskInfo.isDone}/>
-
-        </Right>
-        
+          </>
+        ) : (
+          <>
+            <h1>{taskInfo.name}</h1>
+            <h2>{taskInfo.description}</h2>
+            <h3>Criada em {format(new Date(taskInfo.createdAt), 'dd/MM/yyyy')}</h3>
+          </>
+        )}
+        <OptionsRow editing={editing}>
+          <span>
+            <Edit editing={editing} onClick={() => startEdition()} />
+            <Delete onClick={() => toggleExpanded()} editing={editing} />
+          </span>
+          <PopUpContainer
+            initial={{ height: 0 }}
+            animate={{ height: expanded ? 'auto' : 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2>Deletar tarefa?</h2>
+            <h3 onClick={() => deleteTask()}>Sim</h3>
+            <b onClick={() => toggleExpanded()}>Não</b>
+          </PopUpContainer>
+        </OptionsRow>
+      </Left>
+      <Right>
+        <Check onClick={() => toggleChecked()} isDone={taskInfo.isDone} />
+      </Right>
     </Container>
   );
 }
