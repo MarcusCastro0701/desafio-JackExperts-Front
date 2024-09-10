@@ -97,6 +97,16 @@ function Task({editingVerify, setEditingVerify, taskInfo, useEffectCounter, setU
 
   async function newData(){
 
+    if(taskName.length > 15){
+      toast.error('Nome muito extenso! No máximo 15 caracteres')
+      return
+    }
+
+    if(taskDescription.length > 180){
+      toast.error('Descrição muito extensa! No máximo 180 caracteres')
+      return
+    }
+
     const body = {
       name: taskName,
       description: taskDescription
