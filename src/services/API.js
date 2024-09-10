@@ -15,11 +15,11 @@ function LogoutSession(token) {
 }
 
 function insertTask(token, body, userId) {
-    return axios.post(`${BASE_URL}/task/${userId}`, body, {headers : {Authorization: `Bearer ${token}`}} )
+    return axios.post(`${BASE_URL}/task`, body, {headers : {Authorization: `Bearer ${token}`}} )
 }
 
 function getTasksByUserId(token, userId) {
-    return axios.get(`${BASE_URL}/task/${userId}`, {headers : {Authorization: `Bearer ${token}`}} )
+    return axios.get(`${BASE_URL}/task`, {headers : {Authorization: `Bearer ${token}`}} )
 }
 
 function deleteTaskById(taskId, token){
